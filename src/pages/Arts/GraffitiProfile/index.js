@@ -1,35 +1,81 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import ImageView from 'react-native-image-view';
+import Icon from 'react-native-vector-icons/Feather';
 
-import {View} from 'react-native';
+import {SliderBox} from 'react-native-image-slider-box';
+
+import apiGeolocation from '~/services/apiGeolocation';
 
 import {
   Container,
-  Graffiti,
   GraffitiView,
-  GraffitiImage,
   GraffitiTitle,
+  GraffitiDescription,
 } from './styles';
 
 import Background from '~/components/Background';
 
 export default function GraffitiProfile({route}) {
-  const {graffiti} = route.params;
+  const {graffiti, images} = route.params;
+  const [formattedAdress, setFormattedAdress] = useState();
 
   console.tron.log(graffiti);
+
+  useEffect(() => {
+    async function loadFormattedAdress() {
+      const longitude = graffiti.point.coordinates[0];
+      const latitude = graffiti.point.coordinates[1];
+
+      const latlng = `${latitude},${longitude}`;
+
+      const response = await apiGeolocation.get('json', {
+        params: {
+          latlng,
+          key: 'AIzaSyDFFAm6sy5xJlW-yGjE4RraqB5BFNjDHPg',
+        },
+      });
+
+      setFormattedAdress(response.data.results[0].formatted_address);
+    }
+    loadFormattedAdress();
+  }, []);
 
   return (
     <Background>
       <Container>
-        <GraffitiImage
-          source={{
-            uri: graffiti.images[0].url,
-          }}
+        <SliderBox
+          images={images}
+          sliderBoxHeight={300}
+          dotColor="#FFEE58"
+          inactiveDotColor="#90A4AE"
+          circleLoop
+          onCurrentImagePressed={(index) => console.warn(`${index}`)}
         />
         <GraffitiView>
-          <GraffitiTitle>{graffiti.description}</GraffitiTitle>
+          <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
+        <GraffitiView>
+          <Icon name="info" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{graffiti.description}</GraffitiDescription>
+        </GraffitiView>
+        <GraffitiView>
+          <Icon name="users" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{graffiti.artist_name}</GraffitiDescription>
+        </GraffitiView>
+        <GraffitiView>
+          <Icon name="calendar" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{graffiti.dateFormated}</GraffitiDescription>
+        </GraffitiView>
+        <GraffitiView>
+          <Icon name="map-pin" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{formattedAdress}</GraffitiDescription>
+        </GraffitiView>
+        <GraffitiView>
+          <Icon name="play" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{graffiti.distance}m</GraffitiDescription>
+        </GraffitiView>
+
         <ImageView images={graffiti.images} imageIndex={0} isVisible={false} />
       </Container>
     </Background>

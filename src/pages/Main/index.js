@@ -1,5 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {PermissionsAndroid, View, Text, StyleSheet, Alert} from 'react-native';
+import {PermissionsAndroid, StyleSheet} from 'react-native';
+
+import {parseISO, formatRelative} from 'date-fns';
+import pt from 'date-fns/locale/pt';
 
 import api from '~/services/api';
 
@@ -68,6 +71,16 @@ export default function Main({navigation}) {
     console.tron.log(marker);
   }
 
+  function handleNavigationProfile(graffiti) {
+    const images = [];
+
+    graffiti.images.forEach((image) => {
+      images.push(image.url);
+    });
+
+    navigation.navigate('GraffitiProfile', {graffiti, images});
+  }
+
   async function loadArts() {
     setLoading(true);
 
@@ -80,7 +93,15 @@ export default function Main({navigation}) {
       },
     });
 
-    setArts(response.data);
+    const data = response.data.map((graf) => ({
+      ...graf,
+      dateFormated: formatRelative(parseISO(graf.created_at), new Date(), {
+        locale: pt,
+        addSuffix: true,
+      }),
+    }));
+
+    setArts(data);
     setLoading(false);
     console.tron.log(arts);
   }
@@ -100,10 +121,7 @@ export default function Main({navigation}) {
               longitude: graffiti.point.coordinates[0],
               latitude: graffiti.point.coordinates[1],
             }}>
-            <Callout
-              onPress={() => {
-                navigation.navigate('GraffitiProfile', {graffiti});
-              }}>
+            <Callout onPress={() => handleNavigationProfile(graffiti)}>
               <CalloutView>
                 <CalloutListImage
                   horizontal={true}
