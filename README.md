@@ -4,6 +4,8 @@
 
 Graffitapp is a app to create and localizate graffitis and murals near you.
 
+Built with React Native, Redux and Redux-Saga.
+
 ## Running locally
 
 ### Requirements
