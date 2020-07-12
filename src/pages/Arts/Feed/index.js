@@ -11,6 +11,8 @@ import Geolocation from '@react-native-community/geolocation';
 import Background from '~/components/Background';
 import Button from '~/components/Button';
 
+import {getWidthWindow} from '~/util/dimensions';
+
 import {
   Container,
   GraffitiList,
@@ -19,8 +21,6 @@ import {
   Image,
   Title,
   Description,
-  Artist,
-  Localization,
   AddButton,
 } from './styles';
 
@@ -28,9 +28,12 @@ function Feed({navigation, isFocused}) {
   const [graffitis, setGraffitis] = useState([]);
   const [currentRegion, setCurrentRegion] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [imageHeight, setImageHeight] = useState('');
 
   async function loadGraffitis() {
     try {
+      setImageHeight(getWidthWindow());
+
       setLoading(true);
       console.tron.log(currentRegion);
       const {latitude, longitude} = currentRegion;
@@ -117,6 +120,7 @@ function Feed({navigation, isFocused}) {
               activeOpacity={0.9}
               onPress={() => handleNavigationProfile(graf)}>
               <Image
+                height={imageHeight}
                 source={{
                   uri: graf.images.length
                     ? graf.images[0].url

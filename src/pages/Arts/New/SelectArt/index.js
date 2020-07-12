@@ -50,6 +50,12 @@ export default function SelectArt({navigation}) {
 
   useEffect(() => {
     async function loadInitialPosition() {
+      const parent = navigation.dangerouslyGetParent();
+
+      parent.setOptions({
+        tabBarVisible: false,
+      });
+
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {

@@ -26,7 +26,7 @@ export const GraffitiView = styled.View`
 `;
 
 export const Image = styled.Image`
-  height: 300px;
+  height: ${(props) => props.height}px;
   width: 100%;
 `;
 

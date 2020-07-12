@@ -33,7 +33,8 @@ export default function Routes() {
 
   function New({navigation}) {
     return (
-      <Stack.Navigator screenOptions={{headerShown: true}}>
+      <Stack.Navigator
+        screenOptions={{headerShown: true, headerTransparent: true}}>
         <Stack.Screen
           options={{
             title: 'Selecionar Arte',

@@ -26,6 +26,7 @@ export const Form = styled.ScrollView.attrs({
   contentContainerStyle: {padding: 30},
 })`
   align-self: stretch;
+  margin-top: 60px;
 `;
 
 export const FormInput = styled(Input)`

@@ -10,6 +10,7 @@ export const ReviewArt = styled.ScrollView`
   margin: 24px;
   background-color: #fff;
   border-radius: 10px;
+  margin-top: 60px;
 `;
 
 export const TextReviewArtTitle = styled.Text`

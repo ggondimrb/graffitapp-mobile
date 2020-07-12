@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-
+import {Modal} from 'react-native';
+import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-view';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -16,16 +17,24 @@ import {
 
 import Background from '~/components/Background';
 
+import {getWidthWindow} from '~/util/dimensions';
+
 export default function GraffitiProfile({route}) {
   const {graffiti, images} = route.params;
   const [formattedAdress, setFormattedAdress] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState('');
-
-  console.tron.log(graffiti);
+  const [imagesUrl, setImagesUrl] = useState([]);
+  const [imageHeight, setImageHeight] = useState('');
 
   useEffect(() => {
     async function loadFormattedAdress() {
+      setImageHeight(getWidthWindow);
+
+      images.forEach((image) => {
+        imagesUrl.push({url: image});
+      });
+
       const longitude = graffiti.point.coordinates[0];
       const latitude = graffiti.point.coordinates[1];
 
@@ -41,11 +50,10 @@ export default function GraffitiProfile({route}) {
       setFormattedAdress(response.data.results[0].formatted_address);
     }
     loadFormattedAdress();
-  }, []);
+  }, [graffiti, images, imagesUrl]);
 
   function openImage(index) {
     setImageIndex(index);
-    console.warn(index);
     setIsOpen((currentIsOpen) => !currentIsOpen);
   }
 
@@ -54,19 +62,28 @@ export default function GraffitiProfile({route}) {
       <Container>
         <SliderBox
           images={images}
-          sliderBoxHeight={300}
+          sliderBoxHeight={imageHeight}
           dotColor="#FFEE58"
           inactiveDotColor="#90A4AE"
-          circleLoop
           onCurrentImagePressed={(index) => openImage(index)}
           resizeMethod={'resize'}
         />
-        <ImageView
+        {/* <ImageView
           images={images}
           imageIndex={imageIndex}
           isVisible={isOpen}
           onClose={() => setIsOpen(false)}
-        />
+        /> */}
+        <Modal visible={isOpen} transparent={true}>
+          <ImageViewer
+            imageUrls={imagesUrl}
+            useNativeDriver={true}
+            index={imageIndex}
+            onSwipeDown={() => openImage(null)}
+            enableSwipeDown={true}
+          />
+        </Modal>
+
         <GraffitiView>
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
