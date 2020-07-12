@@ -19,6 +19,8 @@ import Background from '~/components/Background';
 export default function GraffitiProfile({route}) {
   const {graffiti, images} = route.params;
   const [formattedAdress, setFormattedAdress] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const [imageIndex, setImageIndex] = useState('');
 
   console.tron.log(graffiti);
 
@@ -41,6 +43,12 @@ export default function GraffitiProfile({route}) {
     loadFormattedAdress();
   }, []);
 
+  function openImage(index) {
+    setImageIndex(index);
+    console.warn(index);
+    setIsOpen((currentIsOpen) => !currentIsOpen);
+  }
+
   return (
     <Background>
       <Container>
@@ -50,7 +58,14 @@ export default function GraffitiProfile({route}) {
           dotColor="#FFEE58"
           inactiveDotColor="#90A4AE"
           circleLoop
-          onCurrentImagePressed={(index) => console.warn(`${index}`)}
+          onCurrentImagePressed={(index) => openImage(index)}
+          resizeMethod={'resize'}
+        />
+        <ImageView
+          images={images}
+          imageIndex={imageIndex}
+          isVisible={isOpen}
+          onClose={() => setIsOpen(false)}
         />
         <GraffitiView>
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>

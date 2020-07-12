@@ -9,40 +9,37 @@ export const GraffitiList = styled.FlatList.attrs({
   showsVerticalScrollIndicator: false,
 })`
   flex: 1;
-  padding: 0 10px;
 `;
 
-export const GraffitiView = styled.View`
+export const Graffiti = styled.TouchableOpacity`
   flex-direction: column;
   padding: 10px 0;
 `;
 
-export const Graffiti = styled.TouchableOpacity`
+export const GraffitiView = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   padding-bottom: 5px;
-  padding-left: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
 `;
 
 export const Image = styled.Image`
   height: 300px;
   width: 100%;
-  border-radius: 15px;
 `;
 
 export const Title = styled.Text`
   color: #fff;
   font-weight: bold;
+  padding-left: 5px;
+  margin: 5px;
 `;
 
 export const Description = styled.Text`
   color: #737380;
-`;
-
-export const Artist = styled.Text`
-  color: #737380;
-`;
-
-export const Localization = styled.Text`
-  color: #737380;
+  margin-left: 10px;
 `;
 
 export const AddButton = styled(RectButton)`

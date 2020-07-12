@@ -1,4 +1,5 @@
 import React from 'react';
+import {Image, View} from 'react-native';
 import {useSelector} from 'react-redux';
 
 import Icon from 'react-native-vector-icons/Feather';
@@ -22,6 +23,8 @@ import GraffitiProfile from '~/pages/Arts/GraffitiProfile';
 import SelectArt from '~/pages/Arts/New/SelectArt';
 import Confirm from '~/pages/Arts/New/Confirm';
 
+import icon from '~/assets/icon-black.png';
+
 export default function Routes() {
   const signed = useSelector((state) => state.auth.signed);
 
@@ -30,7 +33,7 @@ export default function Routes() {
 
   function New({navigation}) {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: true}}>
         <Stack.Screen
           options={{
             title: 'Selecionar Arte',
@@ -81,9 +84,37 @@ export default function Routes() {
 
   function Home() {
     return (
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Feed" component={Feed} />
-        <Stack.Screen name="New" component={New} />
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Feed"
+          component={Feed}
+          options={{
+            title: '',
+            headerBackground: () => (
+              <View style={{backgroundColor: '#131313'}}>
+                <Image
+                  style={{width: '100%'}}
+                  resizeMode="contain"
+                  source={icon}
+                />
+              </View>
+            ),
+            headerStyle: {
+              backgroundColor: '#131313',
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
+        <Stack.Screen
+          name="GraffitiProfile"
+          options={{headerShown: false}}
+          component={GraffitiProfile}
+        />
+        <Stack.Screen
+          name="New"
+          options={{headerShown: false}}
+          component={New}
+        />
       </Stack.Navigator>
     );
   }
@@ -104,6 +135,7 @@ export default function Routes() {
           tabBarOptions={{
             keyboardHidesTabBar: true,
             activeTintColor: '#fff',
+            showLabel: false,
             inactiveTintColor: '#c6c6c6',
             resetOnBlur: true,
             style: {

@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {PermissionsAndroid, StyleSheet} from 'react-native';
+import {PermissionsAndroid} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
 import {parseISO, formatRelative} from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -145,72 +146,8 @@ export default function Main({navigation}) {
         ))}
       </MapMain>
       <ButtonSearch loading={loading} onPress={loadArts}>
-        Buscar Graffitis
+        <Icon name="search" size={20} color="#fff" />
       </ButtonSearch>
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  map: {
-    flex: 1,
-  },
-
-  avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 4,
-    borderWidth: 4,
-    borderColor: '#FFF',
-  },
-
-  devName: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
-  devBio: {
-    color: '#666',
-    marginTop: 5,
-  },
-
-  devTechs: {
-    marginTop: 5,
-  },
-
-  searchForm: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    right: 20,
-    zIndex: 5,
-    flexDirection: 'row',
-  },
-
-  searchInput: {
-    flex: 1,
-    height: 50,
-    backgroundColor: '#FFF',
-    color: '#333',
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      width: 4,
-      height: 4,
-    },
-    elevation: 2,
-  },
-
-  loadButton: {
-    height: 50,
-    width: 50,
-    backgroundColor: '#8E4Dff',
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 15,
-  },
-});

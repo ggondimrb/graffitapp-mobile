@@ -88,6 +88,16 @@ function Feed({navigation, isFocused}) {
     }
   }, [isFocused]);
 
+  function handleNavigationProfile(graffiti) {
+    const images = [];
+
+    graffiti.images.forEach((image) => {
+      images.push(image.url);
+    });
+
+    navigation.navigate('GraffitiProfile', {graffiti, images});
+  }
+
   if (!currentRegion) {
     // enquanto nao carregar a localizacao, nao mostrar o mapa
     return <Background />;
@@ -97,25 +107,36 @@ function Feed({navigation, isFocused}) {
     <Background>
       <Container>
         <Button loading={loading} onPress={loadGraffitis}>
-          Buscar Graffitis
+          <Icon name="search" size={20} color="#fff" />
         </Button>
         <GraffitiList
           data={graffitis}
           keyExtractor={(graf) => String(graf.id)}
           renderItem={({item: graf}) => (
-            <GraffitiView>
+            <Graffiti
+              activeOpacity={0.9}
+              onPress={() => handleNavigationProfile(graf)}>
               <Image
                 source={{
-                  uri: graf.images[0].url,
+                  uri: graf.images.length
+                    ? graf.images[0].url
+                    : 'https://encurtador.com.br/hDKL6',
                 }}
               />
-              <Graffiti>
-                <Title>{graf.name}</Title>
+              <Title>{graf.name}</Title>
+              <GraffitiView>
+                <Icon name="info" size={20} color="#c6c6c6" />
                 <Description>{graf.description}</Description>
-                <Artist>{graf.artist}</Artist>
-                <Localization>{graf.dateFormated}</Localization>
-              </Graffiti>
-            </GraffitiView>
+              </GraffitiView>
+              <GraffitiView>
+                <Icon name="users" size={20} color="#c6c6c6" />
+                <Description>{graf.artist_name}</Description>
+              </GraffitiView>
+              <GraffitiView>
+                <Icon name="calendar" size={20} color="#c6c6c6" />
+                <Description>{graf.dateFormated}</Description>
+              </GraffitiView>
+            </Graffiti>
           )}
         />
 
