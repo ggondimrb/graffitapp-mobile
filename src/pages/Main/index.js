@@ -27,6 +27,7 @@ export default function Main({navigation}) {
   const [marker, setMarker] = useState(null);
   const [arts, setArts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadInitial, setLoadInitial] = useState(false);
 
   useEffect(() => {
     async function loadInitialPosition() {
@@ -62,6 +63,9 @@ export default function Main({navigation}) {
   if (!currentRegion) {
     // enquanto nao carregar a localizacao, nao mostrar o mapa
     return null;
+  } else if (!loadInitial) {
+    loadArts();
+    setLoadInitial(true);
   }
 
   function handlePickLocalization(e) {

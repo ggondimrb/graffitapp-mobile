@@ -29,6 +29,7 @@ function Feed({navigation, isFocused}) {
   const [currentRegion, setCurrentRegion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageHeight, setImageHeight] = useState('');
+  const [loadInitial, setLoadInitial] = useState(false);
 
   async function loadGraffitis() {
     try {
@@ -104,6 +105,9 @@ function Feed({navigation, isFocused}) {
   if (!currentRegion) {
     // enquanto nao carregar a localizacao, nao mostrar o mapa
     return <Background />;
+  } else if (!loadInitial) {
+    loadGraffitis();
+    setLoadInitial(true);
   }
 
   return (
