@@ -22,6 +22,9 @@ import {
 } from './styles';
 import mapmarker from '~/assets/map-marker.png';
 
+import Background from '~/components/Background';
+import Loader from '~/components/Loader';
+
 export default function Main({navigation}) {
   const [currentRegion, setCurrentRegion] = useState(null);
   const [marker, setMarker] = useState(null);
@@ -62,7 +65,11 @@ export default function Main({navigation}) {
 
   if (!currentRegion) {
     // enquanto nao carregar a localizacao, nao mostrar o mapa
-    return null;
+    return (
+      <Background>
+        <Loader />
+      </Background>
+    );
   } else if (!loadInitial) {
     loadArts();
     setLoadInitial(true);
@@ -137,6 +144,7 @@ export default function Main({navigation}) {
                       source={{
                         uri: item.url,
                       }}
+                      resizeMode="cover"
                     />
                   )}
                 />

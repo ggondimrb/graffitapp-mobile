@@ -1,8 +1,11 @@
 import React, {useRef, useState} from 'react';
+import {Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import Background from '~/components/Background';
 import {signUpRequest} from '~/store/ducks/auth';
+
+import icon from '~/assets/icon.png';
 
 import {
   Container,
@@ -31,6 +34,7 @@ export default function SignUp({navigation}) {
   return (
     <Background>
       <Container>
+      <Image style={{width: '100%'}} resizeMode="contain" source={icon} />
         <Form>
           <FormInput
             icon="person-outline"

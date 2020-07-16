@@ -4,6 +4,9 @@ import {View, Text, StyleSheet} from 'react-native';
 // import { Container } from './styles';
 
 export default function ErrorMessage({errorValue}) {
+  if (!errorValue) {
+    return null;
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.errorText}>{errorValue}</Text>
