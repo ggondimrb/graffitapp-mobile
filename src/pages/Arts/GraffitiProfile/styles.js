@@ -32,3 +32,11 @@ export const GraffitiDescription = styled.Text`
   margin-bottom: 10px;
   margin-left: 10px;
 `;
+
+export const GraffitiActions = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 5px 20px;
+`;

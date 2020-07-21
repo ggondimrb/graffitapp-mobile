@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Modal} from 'react-native';
+import {Modal, Alert, Linking} from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-view';
 import Icon from 'react-native-vector-icons/Feather';
 
 import {SliderBox} from 'react-native-image-slider-box';
+
+import api from '~/services/api';
 
 import apiGeolocation from '~/services/apiGeolocation';
 
@@ -13,9 +15,11 @@ import {
   GraffitiView,
   GraffitiTitle,
   GraffitiDescription,
+  GraffitiActions,
 } from './styles';
 
 import Background from '~/components/Background';
+import ButtonAction from '~/components/ButtonAction';
 
 import {getWidthWindow} from '~/util/dimensions';
 
@@ -26,11 +30,18 @@ export default function GraffitiProfile({route}) {
   const [imageIndex, setImageIndex] = useState('');
   const [imagesUrl, setImagesUrl] = useState([]);
   const [imageHeight, setImageHeight] = useState('');
+  const [like, setLike] = useState(false);
 
   useEffect(() => {
-    async function loadFormattedAdress() {
-      setImageHeight(getWidthWindow);
+    async function loadLike() {
+      const response = await api.get(`like/${graffiti.id}`);
 
+      if (response.data) {
+        setLike(true);
+      }
+    }
+
+    async function loadFormattedAdress() {
       images.forEach((image) => {
         imagesUrl.push({url: image});
       });
@@ -49,12 +60,38 @@ export default function GraffitiProfile({route}) {
 
       setFormattedAdress(response.data.results[0].formatted_address);
     }
+    setImageHeight(getWidthWindow);
     loadFormattedAdress();
-  }, [graffiti, images, imagesUrl]);
+    loadLike();
+  }, [graffiti, images, imagesUrl, like]);
 
   function openImage(index) {
     setImageIndex(index);
     setIsOpen((currentIsOpen) => !currentIsOpen);
+  }
+
+  async function handleLike() {
+    try {
+      await api.post('like', {graffiti_id: graffiti.id});
+      setLike(true);
+    } catch (err) {
+      Alert.alert('Erro: ' + err);
+    }
+  }
+
+  async function handleDisLike() {
+    try {
+      await api.delete(`like/${graffiti.id}`);
+      setLike(false);
+    } catch (err) {
+      Alert.alert('Erro: ' + err);
+    }
+  }
+
+  function navigation() {
+    Linking.openURL(
+      `google.navigation:q=${graffiti.point.coordinates[1]},${graffiti.point.coordinates[0]}`,
+    );
   }
 
   return (
@@ -68,12 +105,6 @@ export default function GraffitiProfile({route}) {
           onCurrentImagePressed={(index) => openImage(index)}
           resizeMethod={'resize'}
         />
-        {/* <ImageView
-          images={images}
-          imageIndex={imageIndex}
-          isVisible={isOpen}
-          onClose={() => setIsOpen(false)}
-        /> */}
         <Modal visible={isOpen} transparent={true}>
           <ImageViewer
             imageUrls={imagesUrl}
@@ -83,7 +114,7 @@ export default function GraffitiProfile({route}) {
             enableSwipeDown={true}
           />
         </Modal>
-
+        <ImageView images={graffiti.images} imageIndex={0} isVisible={false} />
         <GraffitiView>
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
@@ -107,8 +138,23 @@ export default function GraffitiProfile({route}) {
           <Icon name="play" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.distance}m</GraffitiDescription>
         </GraffitiView>
-
-        <ImageView images={graffiti.images} imageIndex={0} isVisible={false} />
+        <GraffitiActions>
+          <ButtonAction
+            onPress={like ? handleDisLike : handleLike}
+            color={like ? 'red' : '#fff'}
+            icon="heart">
+            {like ? 'Gostei!' : 'Gostou?'}
+          </ButtonAction>
+          <ButtonAction color="#fff" icon="map-pin">
+            Check-in
+          </ButtonAction>
+          <ButtonAction color="#fff" icon="navigation-2" onPress={navigation}>
+            Bora lá?
+          </ButtonAction>
+          <ButtonAction color="#fff" icon="check-square">
+            Salvar
+          </ButtonAction>
+        </GraffitiActions>
       </Container>
     </Background>
   );

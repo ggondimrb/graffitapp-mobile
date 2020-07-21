@@ -83,9 +83,10 @@ export default function Routes() {
     );
   }
 
-  function Home() {
+  function Home({navigation}) {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{headerShown: true, headerTransparent: true}}>
         <Stack.Screen
           name="Feed"
           component={Feed}
@@ -108,7 +109,22 @@ export default function Routes() {
         />
         <Stack.Screen
           name="GraffitiProfile"
-          options={{headerShown: false}}
+          options={{
+            headerShown: false,
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Feed');
+                }}>
+                <MaterialIcons
+                  style={{position: 'absolute'}}
+                  name="chevron-left"
+                  size={30}
+                  color="#fff"
+                />
+              </TouchableOpacity>
+            ),
+          }}
           component={GraffitiProfile}
         />
         <Stack.Screen
