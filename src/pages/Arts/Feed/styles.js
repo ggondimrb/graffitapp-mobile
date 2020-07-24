@@ -9,6 +9,7 @@ export const GraffitiList = styled.FlatList.attrs({
   showsVerticalScrollIndicator: false,
 })`
   flex: 1;
+  padding-top: 15px;
 `;
 
 export const Graffiti = styled.TouchableOpacity`

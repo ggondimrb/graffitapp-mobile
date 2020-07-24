@@ -1,5 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {Modal, Alert, Linking} from 'react-native';
+import {Modalize} from 'react-native-modalize';
+import {parseISO, formatRelative} from 'date-fns';
+import pt from 'date-fns/locale/pt';
+
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-view';
 import Icon from 'react-native-vector-icons/Feather';
@@ -20,8 +24,10 @@ import {
 
 import Background from '~/components/Background';
 import ButtonAction from '~/components/ButtonAction';
+import Input from '~/components/Input';
+import CommentModal from '~/components/CommentModal';
 
-import {getWidthWindow} from '~/util/dimensions';
+import {width, height} from '~/util/dimensions';
 
 export default function GraffitiProfile({route}) {
   const {graffiti, images} = route.params;
@@ -31,6 +37,23 @@ export default function GraffitiProfile({route}) {
   const [imagesUrl, setImagesUrl] = useState([]);
   const [imageHeight, setImageHeight] = useState('');
   const [like, setLike] = useState(false);
+  const [comment, setComment] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const modalizeRef = useRef(null);
+
+  async function loadComment() {
+    const response = await api.get(`comment/${graffiti.id}`);
+
+    const data = response.data.map((commen) => ({
+      ...commen,
+      dateFormated: formatRelative(parseISO(commen.created_at), new Date(), {
+        locale: pt,
+        addSuffix: true,
+      }),
+    }));
+
+    setComment(data);
+  }
 
   useEffect(() => {
     async function loadLike() {
@@ -60,9 +83,10 @@ export default function GraffitiProfile({route}) {
 
       setFormattedAdress(response.data.results[0].formatted_address);
     }
-    setImageHeight(getWidthWindow);
+    setImageHeight(width);
     loadFormattedAdress();
     loadLike();
+    loadComment();
   }, [graffiti, images, imagesUrl, like]);
 
   function openImage(index) {
@@ -94,6 +118,41 @@ export default function GraffitiProfile({route}) {
     );
   }
 
+  async function handleCreateComment() {
+    try {
+      const response = await api.post('comment', {
+        graffiti_id: graffiti.id,
+        comment: newComment,
+      });
+      setComment([]);
+      loadComment();
+
+      // const data = {
+      //   id: response.data.id,
+      //   comment: response.data.comment,
+      //   created_at: response.data.createdAt,
+      //   user: {
+      //     id: response.data.user.id,
+      //     name: response.data.user.name,
+      //   },
+      //   dateFormated: formatRelative(
+      //     parseISO(response.data.createdAt),
+      //     new Date(),
+      //     {
+      //       locale: pt,
+      //       addSuffix: true,
+      //     },
+      //   ),
+      // };
+
+      // setComment((c) => [...c, data]);
+
+      setNewComment('');
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   return (
     <Background>
       <Container>
@@ -119,10 +178,6 @@ export default function GraffitiProfile({route}) {
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="info" size={20} color="#c6c6c6" />
-          <GraffitiDescription>{graffiti.description}</GraffitiDescription>
-        </GraffitiView>
-        <GraffitiView>
           <Icon name="users" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.artist_name}</GraffitiDescription>
         </GraffitiView>
@@ -138,23 +193,34 @@ export default function GraffitiProfile({route}) {
           <Icon name="play" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.distance}m</GraffitiDescription>
         </GraffitiView>
+        <GraffitiView>
+          <Icon name="info" size={20} color="#c6c6c6" />
+          <GraffitiDescription>{graffiti.description}</GraffitiDescription>
+        </GraffitiView>
         <GraffitiActions>
           <ButtonAction
             onPress={like ? handleDisLike : handleLike}
             color={like ? 'red' : '#fff'}
-            icon="heart">
-            {like ? 'Gostei!' : 'Gostou?'}
-          </ButtonAction>
-          <ButtonAction color="#fff" icon="map-pin">
-            Check-in
-          </ButtonAction>
-          <ButtonAction color="#fff" icon="navigation-2" onPress={navigation}>
-            Bora lá?
-          </ButtonAction>
-          <ButtonAction color="#fff" icon="check-square">
-            Salvar
-          </ButtonAction>
+            icon="heart"
+          />
+          <ButtonAction
+            onPress={() => modalizeRef.current?.open()}
+            color="#fff"
+            icon="message-circle"
+          />
+          <ButtonAction nPress={navigation} color="#fff" icon="navigation-2" />
+          <ButtonAction color="#fff" icon="save" />
         </GraffitiActions>
+        <Input
+          placeholder="Adicionar um comentário..."
+          returnKeyType="send"
+          value={newComment}
+          onChangeText={setNewComment}
+          onSubmitEditing={handleCreateComment}
+        />
+        <Modalize modalHeight={400} ref={modalizeRef}>
+          <CommentModal comments={comment} />
+        </Modalize>
       </Container>
     </Background>
   );

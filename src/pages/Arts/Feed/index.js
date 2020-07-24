@@ -11,7 +11,7 @@ import Geolocation from '@react-native-community/geolocation';
 import Background from '~/components/Background';
 import Button from '~/components/Button';
 
-import {getWidthWindow} from '~/util/dimensions';
+import {width} from '~/util/dimensions';
 
 import {
   Container,
@@ -33,7 +33,7 @@ function Feed({navigation, isFocused}) {
 
   async function loadGraffitis() {
     try {
-      setImageHeight(getWidthWindow());
+      setImageHeight(width());
 
       setLoading(true);
       console.tron.log(currentRegion);

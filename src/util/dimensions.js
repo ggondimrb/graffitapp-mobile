@@ -1,9 +1,9 @@
 import {Dimensions} from 'react-native';
 
-export function getWidthWindow() {
+export function width() {
   return Math.round(Dimensions.get('window').width);
 }
 
-export function getHeightWindow() {
+export function height() {
   return Math.round(Dimensions.get('window').height);
 }

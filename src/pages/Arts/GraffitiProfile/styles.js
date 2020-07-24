@@ -29,8 +29,9 @@ export const GraffitiDescription = styled.Text`
   font-size: 14px;
   font-weight: bold;
   color: #c6c6c6;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   margin-left: 10px;
+  margin-right: 10px;
 `;
 
 export const GraffitiActions = styled.View`
