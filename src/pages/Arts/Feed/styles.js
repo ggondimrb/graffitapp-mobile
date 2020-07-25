@@ -51,9 +51,13 @@ export const AddButton = styled(RectButton)`
   border-radius: 30px;
   bottom: 10px;
   right: 10px;
-
   align-items: center;
   justify-content: flex-end;
+  shadow-color: #000;
+  shadow-offset: {width: 0, height: 2};
+  shadow-opacity: 0.8;
+  shadow-radius: 2;
+  elevation: 7;
 `;
 
 export const Separator = styled.View`

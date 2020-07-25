@@ -25,10 +25,16 @@ import mapmarker from '~/assets/map-marker.png';
 import Background from '~/components/Background';
 import Loader from '~/components/Loader';
 
+import socket, {
+  connect,
+  disconnect,
+  subscribeToNewGraffitis,
+} from '~/services/socket';
+
 export default function Main({navigation}) {
   const [currentRegion, setCurrentRegion] = useState(null);
   const [marker, setMarker] = useState(null);
-  const [arts, setArts] = useState([]);
+  const [graffitis, setGraffitis] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadInitial, setLoadInitial] = useState(false);
 
@@ -59,6 +65,18 @@ export default function Main({navigation}) {
     loadInitialPosition();
   }, []);
 
+  useEffect(() => {
+    subscribeToNewGraffitis((graf) => setGraffitis([...graffitis, graf]));
+  }, [graffitis]);
+
+  function setupWebSocket() {
+    disconnect();
+
+    const {latitude, longitude} = currentRegion;
+
+    connect(latitude, longitude);
+  }
+
   function handleRegionChanged(region) {
     setCurrentRegion(region);
   }
@@ -71,7 +89,7 @@ export default function Main({navigation}) {
       </Background>
     );
   } else if (!loadInitial) {
-    loadArts();
+    loadGraffitis();
     setLoadInitial(true);
   }
 
@@ -93,7 +111,7 @@ export default function Main({navigation}) {
     navigation.navigate('GraffitiProfile', {graffiti, images});
   }
 
-  async function loadArts() {
+  async function loadGraffitis() {
     setLoading(true);
 
     const {latitude, longitude} = currentRegion;
@@ -113,9 +131,10 @@ export default function Main({navigation}) {
       }),
     }));
 
-    setArts(data);
+    setGraffitis(data);
+    setupWebSocket();
     setLoading(false);
-    console.tron.log(arts);
+    console.tron.log(graffitis);
   }
 
   return (
@@ -125,7 +144,7 @@ export default function Main({navigation}) {
         onRegionChangeComplete={handleRegionChanged}
         showsUserLocation={true}
         onPress={handlePickLocalization}>
-        {arts.map((graffiti) => (
+        {graffitis.map((graffiti) => (
           <Marker
             key={graffiti.id}
             image={mapmarker}
@@ -157,7 +176,7 @@ export default function Main({navigation}) {
           </Marker>
         ))}
       </MapMain>
-      <ButtonSearch loading={loading} onPress={loadArts}>
+      <ButtonSearch loading={loading} onPress={loadGraffitis}>
         <Icon name="search" size={20} color="#fff" />
       </ButtonSearch>
     </Container>

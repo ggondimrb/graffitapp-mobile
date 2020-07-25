@@ -29,7 +29,7 @@ export default function Confirm({route, navigation}) {
       listImage,
     } = graffiti;
 
-    console.tron.log(graffiti);
+    console.warn(graffiti);
 
     try {
       setLoading(true);

@@ -13,6 +13,12 @@ import Button from '~/components/Button';
 
 import {width} from '~/util/dimensions';
 
+import socket, {
+  connect,
+  disconnect,
+  subscribeToNewGraffitis,
+} from '~/services/socket';
+
 import {
   Container,
   GraffitiList,
@@ -52,6 +58,7 @@ function Feed({navigation, isFocused}) {
       }));
 
       setGraffitis(data);
+      setupWebSocket();
 
       setLoading(false);
     } catch (err) {
@@ -91,6 +98,18 @@ function Feed({navigation, isFocused}) {
       //}
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    subscribeToNewGraffitis((graf) => setGraffitis([...graffitis, graf]));
+  }, [graffitis]);
+
+  function setupWebSocket() {
+    disconnect();
+
+    const {latitude, longitude} = currentRegion;
+
+    connect(latitude, longitude);
+  }
 
   function handleNavigationProfile(graffiti) {
     const images = [];
