@@ -2,8 +2,7 @@ import React from 'react';
 import {Image, View} from 'react-native';
 import {useSelector} from 'react-redux';
 
-import Icon from 'react-native-vector-icons/Feather';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Feather} from '@expo/vector-icons';
 
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -43,7 +42,7 @@ export default function Routes() {
                 onPress={() => {
                   navigation.navigate('Feed');
                 }}>
-                <MaterialIcons name="chevron-left" size={30} color="#fff" />
+                <Feather name="chevron-left" size={30} color="#fff" />
               </TouchableOpacity>
             ),
             headerStyle: {
@@ -65,7 +64,7 @@ export default function Routes() {
                 onPress={() => {
                   navigation.navigate('SelectArt');
                 }}>
-                <MaterialIcons name="chevron-left" size={30} color="#fff" />
+                <Feather name="chevron-left" size={30} color="#fff" />
               </TouchableOpacity>
             ),
             headerStyle: {
@@ -116,7 +115,7 @@ export default function Routes() {
                 onPress={() => {
                   navigation.navigate('Feed');
                 }}>
-                <MaterialIcons
+                <Feather
                   style={{position: 'absolute'}}
                   name="chevron-left"
                   size={30}
@@ -162,7 +161,7 @@ export default function Routes() {
           <Tab.Screen
             options={{
               tabBarIcon: ({color}) => (
-                <Icon name="map" size={20} color={color} />
+                <Feather name="map" size={20} color={color} />
               ),
             }}
             name="Map"
@@ -171,7 +170,7 @@ export default function Routes() {
           <Tab.Screen
             options={{
               tabBarIcon: ({color}) => (
-                <Icon name="home" size={20} color={color} />
+                <Feather name="home" size={20} color={color} />
               ),
             }}
             name="Home"

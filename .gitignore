@@ -37,6 +37,7 @@ yarn-error.log
 
 android/
 ios/
+.expo
 
 # BUCK
 buck-out/

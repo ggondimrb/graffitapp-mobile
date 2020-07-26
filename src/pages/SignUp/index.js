@@ -34,10 +34,10 @@ export default function SignUp({navigation}) {
   return (
     <Background>
       <Container>
-      <Image style={{width: '100%'}} resizeMode="contain" source={icon} />
+        <Image style={{width: '100%'}} resizeMode="contain" source={icon} />
         <Form>
           <FormInput
-            icon="person-outline"
+            icon="user"
             autoCorrect={false}
             autoCapitalize="none"
             placeholder="Nome completo"
@@ -47,7 +47,7 @@ export default function SignUp({navigation}) {
             onChangeText={setName}
           />
           <FormInput
-            icon="mail-outline"
+            icon="mail"
             keyboardType="email-address"
             autoCorrect={false}
             autoCapitalize="none"
@@ -59,7 +59,7 @@ export default function SignUp({navigation}) {
             onChangeText={setEmail}
           />
           <FormInput
-            icon="lock-outline"
+            icon="key"
             secureTextEntry
             placeholder="Sua senha secreta"
             ref={passwordRef}

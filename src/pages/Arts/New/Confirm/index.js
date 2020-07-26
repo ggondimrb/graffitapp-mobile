@@ -29,8 +29,6 @@ export default function Confirm({route, navigation}) {
       listImage,
     } = graffiti;
 
-    console.warn(graffiti);
-
     try {
       setLoading(true);
       const response = await api.post('graffitis', {
@@ -60,20 +58,28 @@ export default function Confirm({route, navigation}) {
   async function createImage(image, id) {
     const data = new FormData();
 
-    data.append('file', {
-      name: image.fileName,
-      type: image.type,
-      uri:
-        Platform.OS === 'android'
-          ? image.uri
-          : image.uri.replace('file://', ''),
-    });
+    console.warn('NOME: ' + image.uri.substr(image.uri.lenght - 10));
 
-    const headers = {
-      'Content-Type': 'multipart/form-data',
-    };
+    try {
+      data.append('file', {
+        name: image.uri.substr(image.uri.lenght - 10),
+        type: 'image/jpg',
+        uri:
+          Platform.OS === 'android'
+            ? image.uri
+            : image.uri.replace('file://', ''),
+      });
 
-    await api.post(`files/${id}`, data, headers);
+      console.warn('DATA:' + data);
+
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+      };
+
+      await api.post(`files/${id}`, data, headers);
+    } catch (err) {
+      Alert.alert(err);
+    }
   }
 
   return (
@@ -95,7 +101,7 @@ export default function Confirm({route, navigation}) {
           <ListImage
             horizontal={true}
             data={graffiti.listImage}
-            keyExtractor={(item) => item.fileName}
+            keyExtractor={(item) => item.uri}
             renderItem={({item}) => (
               <View>
                 <Image

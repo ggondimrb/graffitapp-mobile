@@ -1,15 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {parseISO, formatRelative} from 'date-fns';
 import pt from 'date-fns/locale/pt';
-import {PermissionsAndroid} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import {Feather} from '@expo/vector-icons';
 import {withNavigationFocus} from 'react-navigation';
 
 import api from '~/services/api';
-import Geolocation from '@react-native-community/geolocation';
+import {requestPermissionsAsync, getCurrentPositionAsync} from 'expo-location';
 
 import Background from '~/components/Background';
-import Button from '~/components/Button';
 
 import {width} from '~/util/dimensions';
 
@@ -68,24 +66,20 @@ function Feed({navigation, isFocused}) {
   }
 
   async function loadInitialPosition() {
-    const granted = await PermissionsAndroid.request(
-      await PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: 'Localização',
-        message: 'Grafitapp precisa acessar sua localização ',
-      },
-    );
+    const {granted} = await requestPermissionsAsync();
 
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      await Geolocation.getCurrentPosition((position) => {
-        const {latitude, longitude} = position.coords;
+    if (granted) {
+      const {coords} = await getCurrentPositionAsync({
+        enableHighAccuracy: true,
+      });
 
-        setCurrentRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.04,
-          longitudeDelta: 0.04,
-        });
+      const {latitude, longitude} = coords;
+
+      setCurrentRegion({
+        latitude,
+        longitude,
+        latitudeDelta: 0.04,
+        longitudeDelta: 0.04,
       });
     }
   }
@@ -132,10 +126,9 @@ function Feed({navigation, isFocused}) {
   return (
     <Background>
       <Container>
-        <Button loading={loading} onPress={loadGraffitis}>
-          <Icon name="search" size={20} color="#fff" />
-        </Button>
         <GraffitiList
+          refreshing={graffitis.networkStatus === 4}
+          onRefresh={loadGraffitis}
           data={graffitis}
           keyExtractor={(graf) => String(graf.id)}
           renderItem={({item: graf}) => (
@@ -152,28 +145,23 @@ function Feed({navigation, isFocused}) {
               />
               <Title>{graf.name}</Title>
               <GraffitiView>
-                <Icon name="info" size={20} color="#c6c6c6" />
+                <Feather name="info" size={20} color="#c6c6c6" />
                 <Description>{graf.description}</Description>
               </GraffitiView>
               <GraffitiView>
-                <Icon name="users" size={20} color="#c6c6c6" />
+                <Feather name="users" size={20} color="#c6c6c6" />
                 <Description>{graf.artist_name}</Description>
               </GraffitiView>
               <GraffitiView>
-                <Icon name="calendar" size={20} color="#c6c6c6" />
+                <Feather name="calendar" size={20} color="#c6c6c6" />
                 <Description>{graf.dateFormated}</Description>
               </GraffitiView>
             </Graffiti>
           )}
         />
 
-        <AddButton>
-          <Icon
-            name="plus"
-            size={60}
-            color="#fff"
-            onPress={() => navigation.navigate('New')}
-          />
+        <AddButton onPress={() => navigation.navigate('New')}>
+          <Feather name="plus" size={40} color="#fff" />
         </AddButton>
       </Container>
     </Background>

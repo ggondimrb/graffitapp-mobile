@@ -10,6 +10,8 @@ import {signInRequest} from '~/store/ducks/auth';
 
 import icon from '~/assets/icon.png';
 
+import {Feather} from '@expo/vector-icons';
+
 import {
   Container,
   Form,
@@ -60,7 +62,7 @@ export default function SignIn({navigation}) {
           }) => (
             <Form>
               <FormInput
-                icon="mail-outline"
+                icon="user"
                 keyboardType="email-address"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -75,7 +77,7 @@ export default function SignIn({navigation}) {
               <ErrorMessage errorValue={touched.email && errors.email} />
 
               <FormInput
-                icon="lock-outline"
+                icon="key"
                 secureTextEntry
                 placeholder="Sua senha secreta"
                 ref={passwordRef}

@@ -6,7 +6,7 @@ import pt from 'date-fns/locale/pt';
 
 import ImageViewer from 'react-native-image-zoom-viewer';
 import ImageView from 'react-native-image-view';
-import Icon from 'react-native-vector-icons/Feather';
+import {Feather} from '@expo/vector-icons';
 
 import {SliderBox} from 'react-native-image-slider-box';
 
@@ -178,23 +178,23 @@ export default function GraffitiProfile({route}) {
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="users" size={20} color="#c6c6c6" />
+          <Feather name="users" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.artist_name}</GraffitiDescription>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="calendar" size={20} color="#c6c6c6" />
+          <Feather name="calendar" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.dateFormated}</GraffitiDescription>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="map-pin" size={20} color="#c6c6c6" />
+          <Feather name="map-pin" size={20} color="#c6c6c6" />
           <GraffitiDescription>{formattedAdress}</GraffitiDescription>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="play" size={20} color="#c6c6c6" />
+          <Feather name="play" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.distance}m</GraffitiDescription>
         </GraffitiView>
         <GraffitiView>
-          <Icon name="info" size={20} color="#c6c6c6" />
+          <Feather name="info" size={20} color="#c6c6c6" />
           <GraffitiDescription>{graffiti.description}</GraffitiDescription>
         </GraffitiView>
         <GraffitiActions>
@@ -208,18 +208,19 @@ export default function GraffitiProfile({route}) {
             color="#fff"
             icon="message-circle"
           />
-          <ButtonAction nPress={navigation} color="#fff" icon="navigation-2" />
+          <ButtonAction onPress={navigation} color="#fff" icon="navigation-2" />
           <ButtonAction color="#fff" icon="save" />
         </GraffitiActions>
-        <Input
-          placeholder="Adicionar um comentário..."
-          returnKeyType="send"
-          value={newComment}
-          onChangeText={setNewComment}
-          onSubmitEditing={handleCreateComment}
-        />
-        <Modalize modalHeight={400} ref={modalizeRef}>
+        <Modalize modalHeight={300} ref={modalizeRef}>
           <CommentModal comments={comment} />
+          <Input
+            style={{backgroundColor: '#353544'}}
+            placeholder="Adicionar um comentário..."
+            returnKeyType="send"
+            value={newComment}
+            onChangeText={setNewComment}
+            onSubmitEditing={handleCreateComment}
+          />
         </Modalize>
       </Container>
     </Background>

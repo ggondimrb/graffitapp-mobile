@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {PermissionsAndroid} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import {Feather} from '@expo/vector-icons';
 
 import {parseISO, formatRelative} from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -8,7 +7,8 @@ import pt from 'date-fns/locale/pt';
 import api from '~/services/api';
 
 import {Marker, Callout} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
+
+import {requestPermissionsAsync, getCurrentPositionAsync} from 'expo-location';
 
 import {
   Container,
@@ -40,30 +40,26 @@ export default function Main({navigation}) {
 
   useEffect(() => {
     async function loadInitialPosition() {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Localização',
-          message: 'Grafitapp precisa acessar sua localização ',
-        },
-      );
+      const {granted} = await requestPermissionsAsync();
 
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition((position) => {
-          const {latitude, longitude} = position.coords;
+      if (granted) {
+        const {coords} = await getCurrentPositionAsync({
+          enableHighAccuracy: true,
+        });
 
-          setCurrentRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.04,
-          });
+        const {latitude, longitude} = coords;
+
+        setCurrentRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.04,
+          longitudeDelta: 0.04,
         });
       }
     }
 
     loadInitialPosition();
-  }, []);
+  }, [currentRegion]);
 
   useEffect(() => {
     subscribeToNewGraffitis((graf) => setGraffitis([...graffitis, graf]));
@@ -177,7 +173,7 @@ export default function Main({navigation}) {
         ))}
       </MapMain>
       <ButtonSearch loading={loading} onPress={loadGraffitis}>
-        <Icon name="search" size={20} color="#fff" />
+        <Feather name="search" size={20} color="#fff" />
       </ButtonSearch>
     </Container>
   );

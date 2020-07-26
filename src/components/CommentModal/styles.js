@@ -5,7 +5,7 @@ export const Comments = styled.FlatList.attrs({
 })`
   flex: 1;
   padding: 5px 20px;
-  height: 100%;
+  height: 80%;
   background-color: #353544;
 `;
 

@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
 import {RectButton} from 'react-native-gesture-handler';
+import Button from '~/components/Button';
 
 export const Container = styled.View`
   flex: 1;
@@ -43,7 +44,7 @@ export const Description = styled.Text`
   margin-left: 10px;
 `;
 
-export const AddButton = styled(RectButton)`
+export const AddButton = styled(Button)`
   position: absolute;
   height: 60px;
   width: 60px;
@@ -52,12 +53,7 @@ export const AddButton = styled(RectButton)`
   bottom: 10px;
   right: 10px;
   align-items: center;
-  justify-content: flex-end;
-  shadow-color: #000;
-  shadow-offset: {width: 0, height: 2};
-  shadow-opacity: 0.8;
-  shadow-radius: 2;
-  elevation: 7;
+  justify-content: center;
 `;
 
 export const Separator = styled.View`

@@ -1,16 +1,18 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Feather} from '@expo/vector-icons';
 
-import {PermissionsAndroid, View, Alert} from 'react-native';
+import {View, Alert} from 'react-native';
 
 import {Marker} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
+import {requestPermissionsAsync, getCurrentPositionAsync} from 'expo-location';
 
 import apiGeolocation from '~/services/apiGeolocation';
 
-import ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 
 import ErrorMessage from '~/components/ErrorMessage';
 import Background from '~/components/Background';
@@ -53,72 +55,67 @@ export default function SelectArt({navigation}) {
 
   const [loading, setLoading] = useState(false);
 
-  const imagePickerOptions = {
-    title: 'Selecione a arte',
-    takePhotoButtonTitle: 'Tirar uma foto',
-    chooseFromLibraryButtonTitle: 'Escolher da Galeria...',
-  };
-
   useEffect(() => {
     async function loadInitialPosition() {
-      navigation.setOptions({
-        tabBarVisible: false,
-      });
+      if (Constants.platform.ios) {
+        const {status} = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        if (status !== 'granted') {
+          Alert.alert(
+            'Sorry, we need camera roll permissions to make this work!',
+          );
+        }
+      }
 
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Localização',
-          message: 'Grafitapp precisa acessar sua localização ',
-        },
-      );
+      const {granted} = await requestPermissionsAsync();
 
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition((position) => {
-          const {latitude, longitude} = position.coords;
+      if (granted) {
+        const {coords} = await getCurrentPositionAsync({
+          enableHighAccuracy: true,
+        });
 
-          setCurrentRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.04,
-            longitudeDelta: 0.04,
-          });
+        const {latitude, longitude} = coords;
+
+        setCurrentRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.04,
+          longitudeDelta: 0.04,
         });
       }
     }
 
     loadInitialPosition();
-  }, []);
+  }, [currentRegion]);
 
-  function imagePickerCallback(data) {
-    if (data.didCancel) {
-      return;
-    }
+  async function pickImage() {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    if (data.error) {
-      return;
-    }
+      if (!result.cancelled) {
+        const imageExists = listImage.some((item) => item.uri === result.uri);
 
-    if (!data.uri) {
-      return;
-    }
+        if (imageExists) {
+          Alert.alert('Imagem já existe');
+        } else {
+          const {uri, type} = result;
 
-    const imageExists = listImage.some(
-      (item) => item.fileName === data.fileName,
-    );
-
-    if (imageExists) {
-      Alert.alert('Imagem já existe');
-    } else {
-      const {uri, fileName, type} = data;
-
-      setListImage([...listImage, {uri, fileName, type}]);
+          setListImage([...listImage, {uri, type}]);
+        }
+      }
+    } catch (e) {
+      console.log(e);
     }
   }
 
-  function removeImage(fileName) {
-    console.tron.log(fileName);
-    setListImage(listImage.filter((item) => item.fileName !== fileName));
+  function removeImage(uri) {
+    console.tron.log(uri);
+    setListImage(listImage.filter((item) => item.uri !== uri));
   }
 
   async function handleOnCreate(values, actions) {
@@ -198,6 +195,7 @@ export default function SelectArt({navigation}) {
           }) => (
             <Form>
               <FormInput
+                icon="image"
                 autoCorrect={false}
                 autoCapitalize="none"
                 placeholder="Nome"
@@ -226,7 +224,6 @@ export default function SelectArt({navigation}) {
                 errorValue={touched.description && errors.description}
               />
               <FormInput
-                icon="palette"
                 placeholder="Artista"
                 returnKeyType="send"
                 onSubmitEditing={handleSubmit}
@@ -240,13 +237,7 @@ export default function SelectArt({navigation}) {
 
               <Separator />
 
-              <AddImage
-                onPress={() =>
-                  ImagePicker.showImagePicker(
-                    imagePickerOptions,
-                    imagePickerCallback,
-                  )
-                }>
+              <AddImage onPress={pickImage}>
                 <TitleAddImage>Escolher imagem</TitleAddImage>
               </AddImage>
               {listImage.length === 0 && (
@@ -258,7 +249,7 @@ export default function SelectArt({navigation}) {
               <ListImage
                 horizontal={true}
                 data={listImage}
-                keyExtractor={(item) => item.fileName}
+                keyExtractor={(item) => item.uri}
                 renderItem={({item}) => (
                   <View>
                     <Image
@@ -267,11 +258,11 @@ export default function SelectArt({navigation}) {
                       }}
                     />
                     <RemoveImage>
-                      <Icon
-                        name="remove-circle"
+                      <Feather
+                        name="x"
                         size={25}
                         color="#f5222d"
-                        onPress={() => removeImage(item.fileName)}
+                        onPress={() => removeImage(item.uri)}
                       />
                     </RemoveImage>
                   </View>
