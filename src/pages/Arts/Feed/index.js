@@ -91,11 +91,9 @@ function Feed({navigation, isFocused}) {
       loadGraffitis();
       //}
     }
-  }, [isFocused]);
 
-  useEffect(() => {
     subscribeToNewGraffitis((graf) => setGraffitis([...graffitis, graf]));
-  }, [graffitis]);
+  }, [isFocused, graffitis]);
 
   function setupWebSocket() {
     disconnect();

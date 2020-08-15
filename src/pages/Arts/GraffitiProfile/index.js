@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Modal, Alert, Linking} from 'react-native';
+import {Modal, Alert, Linking, Platform} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {parseISO, formatRelative} from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -113,8 +113,9 @@ export default function GraffitiProfile({route}) {
   }
 
   function navigation() {
+    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
     Linking.openURL(
-      `google.navigation:q=${graffiti.point.coordinates[1]},${graffiti.point.coordinates[0]}`,
+      `${scheme}${graffiti.point.coordinates[1]},${graffiti.point.coordinates[0]}`,
     );
   }
 

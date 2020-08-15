@@ -33,7 +33,6 @@ import socket, {
 
 export default function Main({navigation}) {
   const [currentRegion, setCurrentRegion] = useState(null);
-  const [marker, setMarker] = useState(null);
   const [graffitis, setGraffitis] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadInitial, setLoadInitial] = useState(false);
@@ -89,14 +88,6 @@ export default function Main({navigation}) {
     setLoadInitial(true);
   }
 
-  function handlePickLocalization(e) {
-    const {latitude, longitude} = e.nativeEvent.coordinate;
-
-    setMarker({latitude, longitude});
-
-    console.tron.log(marker);
-  }
-
   function handleNavigationProfile(graffiti) {
     const images = [];
 
@@ -138,8 +129,7 @@ export default function Main({navigation}) {
       <MapMain
         initialRegion={currentRegion}
         onRegionChangeComplete={handleRegionChanged}
-        showsUserLocation={true}
-        onPress={handlePickLocalization}>
+        showsUserLocation={true}>
         {graffitis.map((graffiti) => (
           <Marker
             key={graffiti.id}

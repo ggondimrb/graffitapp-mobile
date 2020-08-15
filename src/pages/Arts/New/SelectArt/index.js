@@ -49,10 +49,8 @@ const validationSchema = Yup.object().shape({
 export default function SelectArt({navigation}) {
   const [listImage, setListImage] = useState([]);
   const descriptionRef = useRef();
-
   const [currentRegion, setCurrentRegion] = useState(null);
   const [marker, setMarker] = useState(null);
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -158,7 +156,6 @@ export default function SelectArt({navigation}) {
       console.tron.log(graffiti);
 
       navigation.navigate('Confirm', {graffiti});
-
       setLoading(false);
     } catch (err) {
       setLoading(false);

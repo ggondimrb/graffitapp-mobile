@@ -6,13 +6,16 @@ import '~/config/ReactotronConfig';
 
 import {store, persistor} from './store';
 import App from './App';
+import {RootSiblingParent} from 'react-native-root-siblings';
 
 export default function Index() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <StatusBar barStyle="light-content" backgroundColor="#333" />
-        <App />
+        <RootSiblingParent>
+          <StatusBar barStyle="light-content" backgroundColor="#333" />
+          <App />
+        </RootSiblingParent>
       </PersistGate>
     </Provider>
   );

@@ -15,9 +15,12 @@ import {
 
 import Background from '~/components/Background';
 
+import Toast from 'react-native-root-toast';
+
 export default function Confirm({route, navigation}) {
   const {graffiti} = route.params;
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(false);
 
   async function handleSubmit() {
     const {
@@ -47,8 +50,10 @@ export default function Confirm({route, navigation}) {
         }),
       );
 
-      navigation.navigate('Feed');
+      setToast(true);
+      setTimeout(() => setToast(false), 10000);
       setLoading(false);
+      navigation.navigate('Feed');
     } catch (err) {
       setLoading(false);
       Alert.alert('Erro: ' + err);
@@ -57,8 +62,6 @@ export default function Confirm({route, navigation}) {
 
   async function createImage(image, id) {
     const data = new FormData();
-
-    console.warn('NOME: ' + image.uri.substr(image.uri.lenght - 10));
 
     try {
       data.append('file', {
@@ -69,8 +72,6 @@ export default function Confirm({route, navigation}) {
             ? image.uri
             : image.uri.replace('file://', ''),
       });
-
-      console.warn('DATA:' + data);
 
       const headers = {
         'Content-Type': 'multipart/form-data',
@@ -84,6 +85,15 @@ export default function Confirm({route, navigation}) {
 
   return (
     <Background>
+      <Toast
+        visible={toast}
+        position={50}
+        shadow={true}
+        shadowColor="#131313"
+        animation={false}
+        hideOnPress={true}>
+        Grafitti adicionado com sucesso!
+      </Toast>
       <Container>
         <ReviewArt>
           <TextReviewArtLabel>Nome</TextReviewArtLabel>
