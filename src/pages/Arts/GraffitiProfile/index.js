@@ -1,11 +1,17 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {Modal, Alert, Linking, Platform} from 'react-native';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
+import {
+  Modal,
+  Alert,
+  Linking,
+  Platform,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+} from 'react-native';
 import {Modalize} from 'react-native-modalize';
 import {parseISO, formatRelative} from 'date-fns';
 import pt from 'date-fns/locale/pt';
 
 import ImageViewer from 'react-native-image-zoom-viewer';
-import ImageView from 'react-native-image-view';
 import {Feather} from '@expo/vector-icons';
 
 import {SliderBox} from 'react-native-image-slider-box';
@@ -20,14 +26,14 @@ import {
   GraffitiTitle,
   GraffitiDescription,
   GraffitiActions,
+  InputComment,
 } from './styles';
 
 import Background from '~/components/Background';
 import ButtonAction from '~/components/ButtonAction';
-import Input from '~/components/Input';
 import CommentModal from '~/components/CommentModal';
 
-import {width, height} from '~/util/dimensions';
+import {width} from '~/util/dimensions';
 
 export default function GraffitiProfile({route}) {
   const {graffiti, images} = route.params;
@@ -40,8 +46,9 @@ export default function GraffitiProfile({route}) {
   const [comment, setComment] = useState([]);
   const [newComment, setNewComment] = useState('');
   const modalizeRef = useRef(null);
+  const [loadComment, setLoadComment] = useState(false);
 
-  async function loadComment() {
+  const getComments = useCallback(async () => {
     const response = await api.get(`comment/${graffiti.id}`);
 
     const data = response.data.map((commen) => ({
@@ -53,7 +60,7 @@ export default function GraffitiProfile({route}) {
     }));
 
     setComment(data);
-  }
+  }, [graffiti.id]);
 
   useEffect(() => {
     async function loadLike() {
@@ -86,8 +93,8 @@ export default function GraffitiProfile({route}) {
     setImageHeight(width);
     loadFormattedAdress();
     loadLike();
-    loadComment();
-  }, [graffiti, images, imagesUrl, like]);
+    getComments();
+  }, [graffiti, images, imagesUrl, like, getComments]);
 
   function openImage(index) {
     setImageIndex(index);
@@ -120,35 +127,19 @@ export default function GraffitiProfile({route}) {
   }
 
   async function handleCreateComment() {
+    setLoadComment(true);
     try {
-      const response = await api.post('comment', {
-        graffiti_id: graffiti.id,
-        comment: newComment,
-      });
-      setComment([]);
-      loadComment();
-
-      // const data = {
-      //   id: response.data.id,
-      //   comment: response.data.comment,
-      //   created_at: response.data.createdAt,
-      //   user: {
-      //     id: response.data.user.id,
-      //     name: response.data.user.name,
-      //   },
-      //   dateFormated: formatRelative(
-      //     parseISO(response.data.createdAt),
-      //     new Date(),
-      //     {
-      //       locale: pt,
-      //       addSuffix: true,
-      //     },
-      //   ),
-      // };
-
-      // setComment((c) => [...c, data]);
-
-      setNewComment('');
+      if (newComment.length !== 0) {
+        await api.post('comment', {
+          graffiti_id: graffiti.id,
+          comment: newComment,
+        });
+        getComments();
+        setNewComment('');
+      } else {
+        Alert.alert('Comentário vazio');
+      }
+      setLoadComment(false);
     } catch (err) {
       console.warn(err);
     }
@@ -172,9 +163,9 @@ export default function GraffitiProfile({route}) {
             index={imageIndex}
             onSwipeDown={() => openImage(null)}
             enableSwipeDown={true}
+            enableImageZoom={false}
           />
         </Modal>
-        <ImageView images={graffiti.images} imageIndex={0} isVisible={false} />
         <GraffitiView>
           <GraffitiTitle>{graffiti.name}</GraffitiTitle>
         </GraffitiView>
@@ -212,17 +203,31 @@ export default function GraffitiProfile({route}) {
           <ButtonAction onPress={navigation} color="#fff" icon="navigation-2" />
           <ButtonAction color="#fff" icon="save" />
         </GraffitiActions>
-        <Modalize modalHeight={300} ref={modalizeRef}>
-          <CommentModal comments={comment} />
-          <Input
-            style={{backgroundColor: '#353544'}}
-            placeholder="Adicionar um comentário..."
-            returnKeyType="send"
-            value={newComment}
-            onChangeText={setNewComment}
-            onSubmitEditing={handleCreateComment}
-          />
-        </Modalize>
+        <KeyboardAvoidingView behavior="position">
+          <Modalize
+            modalStyle={{backgroundColor: '#353544'}}
+            modalHeight={350}
+            ref={modalizeRef}
+            FooterComponent={
+              loadComment ? (
+                <ActivityIndicator style={{height: 70}} />
+              ) : (
+                <InputComment
+                  placeholder="Adicionar um comentário..."
+                  returnKeyType="send"
+                  value={newComment}
+                  onChangeText={setNewComment}
+                  onSubmitEditing={handleCreateComment}
+                />
+              )
+            }>
+            <CommentModal
+              comments={comment}
+              getComments={getComments}
+              userId={graffiti.user_id}
+            />
+          </Modalize>
+        </KeyboardAvoidingView>
       </Container>
     </Background>
   );

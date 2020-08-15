@@ -1,9 +1,11 @@
 import React, {useRef, useState} from 'react';
-import {Image} from 'react-native';
+import {Image, Alert} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import Background from '~/components/Background';
 import {signUpRequest} from '~/store/ducks/auth';
+
+import api from '~/services/api';
 
 import icon from '~/assets/icon.png';
 
@@ -27,8 +29,14 @@ export default function SignUp({navigation}) {
 
   const loading = useSelector((state) => state.auth.loading);
 
-  function handleSubmit() {
-    dispatch(signUpRequest(name, email, password));
+  async function handleSubmit() {
+    try {
+      const response = api.post('users', {name, email, password});
+      Alert.alert(response.data);
+      navigation.navigate('SignIn');
+    } catch (e) {
+      Alert.alert('Erro ao criar usuário: ' + e);
+    }
   }
 
   return (

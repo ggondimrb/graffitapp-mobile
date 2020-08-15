@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import Input from '~/components/Input';
 
 export const Container = styled.ScrollView`
   flex: 1;
@@ -40,4 +41,9 @@ export const GraffitiActions = styled.View`
   align-items: flex-start;
   justify-content: space-between;
   padding: 5px 20px;
+`;
+
+export const InputComment = styled(Input)`
+  background-color: #353544;
+  height: 70px;
 `;
