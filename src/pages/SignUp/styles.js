@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import {Platform, Switch} from 'react-native';
 import styled from 'styled-components/native';
 
 import Input from '~/components/Input';
@@ -34,4 +34,19 @@ export const SignLink = styled.TouchableOpacity`
 export const SignLinkText = styled.Text`
   color: #fff;
   font-weight: bold;
+`;
+
+export const SwitchIsArtist = styled.Switch`
+  margin: 10px;
+`;
+
+export const SwitchIsArtistText = styled.Text`
+  color: #fff;
+  font-weight: bold;
+  margin-top: 15px;
+`;
+
+export const SwitchContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
 `;

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {Image} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
@@ -9,8 +9,6 @@ import Background from '~/components/Background';
 import {signInRequest} from '~/store/ducks/auth';
 
 import icon from '~/assets/icon.png';
-
-import {Feather} from '@expo/vector-icons';
 
 import {
   Container,

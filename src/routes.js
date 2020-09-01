@@ -24,6 +24,9 @@ import Confirm from '~/pages/Arts/New/Confirm';
 
 import icon from '~/assets/icon-black.png';
 
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+
 export default function Routes() {
   const signed = useSelector((state) => state.auth.signed);
 
@@ -144,6 +147,15 @@ export default function Routes() {
     );
   }
 
+  function UserProfile() {
+    return (
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="EditProfile" component={EditProfile} />
+      </Stack.Navigator>
+    );
+  }
+
   return (
     <NavigationContainer>
       {signed ? (
@@ -175,6 +187,15 @@ export default function Routes() {
             }}
             name="Home"
             component={Home}
+          />
+          <Tab.Screen
+            options={{
+              tabBarIcon: ({color}) => (
+                <Feather name="user" size={20} color={color} />
+              ),
+            }}
+            name="User"
+            component={UserProfile}
           />
         </Tab.Navigator>
       ) : (

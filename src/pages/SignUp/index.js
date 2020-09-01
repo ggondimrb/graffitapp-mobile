@@ -1,9 +1,8 @@
 import React, {useRef, useState} from 'react';
 import {Image, Alert} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 
 import Background from '~/components/Background';
-import {signUpRequest} from '~/store/ducks/auth';
 
 import api from '~/services/api';
 
@@ -16,23 +15,26 @@ import {
   SubmitButton,
   SignLink,
   SignLinkText,
+  SwitchIsArtist,
+  SwitchIsArtistText,
+  SwitchContainer,
 } from './styles';
 // navigation: propriedade existente nas telas
 export default function SignUp({navigation}) {
-  const dispatch = useDispatch();
   const passwordRef = useRef();
   const emailRef = useRef();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [artist, setArtist] = useState(false);
 
   const loading = useSelector((state) => state.auth.loading);
 
   async function handleSubmit() {
     try {
-      const response = api.post('users', {name, email, password});
-      Alert.alert(response.data);
+      api.post('users', {name, email, password, artist});
+
       navigation.navigate('SignIn');
     } catch (e) {
       Alert.alert('Erro ao criar usuário: ' + e);
@@ -66,6 +68,10 @@ export default function SignUp({navigation}) {
             value={email}
             onChangeText={setEmail}
           />
+          <SwitchContainer>
+            <SwitchIsArtistText>É artista?</SwitchIsArtistText>
+            <SwitchIsArtist value={artist} onValueChange={setArtist} />
+          </SwitchContainer>
           <FormInput
             icon="key"
             secureTextEntry
