@@ -151,6 +151,7 @@ export default function Routes() {
     return (
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="GraffitiProfile" component={GraffitiProfile} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
       </Stack.Navigator>
     );

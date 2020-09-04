@@ -22,6 +22,8 @@ export const ArtList = styled.FlatList.attrs({
   padding: 10px 0;
 `;
 
+export const GraffitiContainer = styled.TouchableOpacity``;
+
 export const GraffitiImage = styled.Image`
   width: ${widthImage}px;
   height: ${widthImage}px;

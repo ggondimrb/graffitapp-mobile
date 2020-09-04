@@ -20,10 +20,20 @@ export const GraffitiView = styled.View`
 `;
 
 export const GraffitiTitle = styled.Text`
+  flex: 1;
   font-size: 20px;
   font-weight: bold;
   color: #fff;
   margin-bottom: 10px;
+`;
+
+export const GraffitiSub = styled.View`
+  top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  display: flex;
 `;
 
 export const GraffitiDescription = styled.Text`

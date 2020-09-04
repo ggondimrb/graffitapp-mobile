@@ -1,4 +1,6 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
+import {useSelector} from 'react-redux';
+
 import {
   Modal,
   Alert,
@@ -13,6 +15,7 @@ import pt from 'date-fns/locale/pt';
 
 import ImageViewer from 'react-native-image-zoom-viewer';
 import {Feather} from '@expo/vector-icons';
+import {useNavigation} from '@react-navigation/native';
 
 import {SliderBox} from 'react-native-image-slider-box';
 
@@ -24,6 +27,7 @@ import {
   Container,
   GraffitiView,
   GraffitiTitle,
+  GraffitiSub,
   GraffitiDescription,
   GraffitiActions,
   InputComment,
@@ -36,6 +40,8 @@ import CommentModal from '~/components/CommentModal';
 import {width} from '~/util/dimensions';
 
 export default function GraffitiProfile({route}) {
+  const profile = useSelector((state) => state.auth.user);
+
   const {graffiti, images} = route.params;
   const [formattedAdress, setFormattedAdress] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +53,7 @@ export default function GraffitiProfile({route}) {
   const [newComment, setNewComment] = useState('');
   const modalizeRef = useRef(null);
   const [loadComment, setLoadComment] = useState(false);
+  const {navigate} = useNavigation();
 
   const getComments = useCallback(async () => {
     const response = await api.get(`comment/${graffiti.id}`);
@@ -145,6 +152,11 @@ export default function GraffitiProfile({route}) {
     }
   }
 
+  async function handleRemove(id) {
+    await api.delete(`graffitis/${id}`);
+    navigate('Profile');
+  }
+
   return (
     <Background>
       <Container>
@@ -167,7 +179,35 @@ export default function GraffitiProfile({route}) {
           />
         </Modal>
         <GraffitiView>
-          <GraffitiTitle>{graffiti.name}</GraffitiTitle>
+          <GraffitiSub>
+            <GraffitiTitle>{graffiti.name}</GraffitiTitle>
+            {profile.id === graffiti.user_id && (
+              <ButtonAction
+                color="#fff"
+                icon="more-horizontal"
+                onPress={() => {
+                  Alert.alert(
+                    'Ações',
+                    '',
+                    [
+                      {
+                        text: 'Editar',
+                        onPress: () => console.log('Ask me later pressed'),
+                      },
+                      {
+                        text: 'Remover',
+                        onPress: () => handleRemove(graffiti.id),
+                        style: 'destructive',
+                      },
+                      {text: 'Voltar'},
+                    ],
+
+                    {cancelable: false},
+                  );
+                }}
+              />
+            )}
+          </GraffitiSub>
         </GraffitiView>
         <GraffitiView>
           <Feather name="users" size={20} color="#c6c6c6" />

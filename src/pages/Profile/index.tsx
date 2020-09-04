@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Text} from 'react-native';
 import {useSelector} from 'react-redux';
 
 import {
@@ -7,12 +6,15 @@ import {
   EditButton,
   ArtList,
   GraffitiImage,
+  GraffitiContainer,
   Username,
 } from './styles';
 import Background from '~/components/Background';
 
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
 import api from '~/services/api';
+import {formatRelative, parseISO} from 'date-fns';
+import {pt} from 'date-fns/locale';
 
 export interface Payload {
   auth: Auth;
@@ -34,6 +36,7 @@ export interface Graffiti {
   description: string;
   artist_name: string;
   created_at: string;
+  dateFormated: string;
   user_id: number;
   images: [
     {
@@ -49,6 +52,7 @@ const Profile: React.FC = () => {
   const {navigate} = useNavigation();
   const [graffitis, setGraffitis] = useState([]);
   const [loading, setLoading] = useState(false);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     async function loadGraffitis() {
@@ -57,7 +61,14 @@ const Profile: React.FC = () => {
 
         const response = await api.get('graffitisByUser');
 
-        setGraffitis(response.data);
+        const data = response.data.map((graf: Graffiti) => ({
+          ...graf,
+          dateFormated: formatRelative(parseISO(graf.created_at), new Date(), {
+            locale: pt,
+          }),
+        }));
+
+        setGraffitis(data);
 
         setLoading(false);
       } catch (err) {
@@ -67,7 +78,17 @@ const Profile: React.FC = () => {
     }
 
     loadGraffitis();
-  }, []);
+  }, [isFocused]);
+
+  function handleNavigationProfile(graffiti: Graffiti) {
+    const images: Array<String> = [];
+
+    graffiti.images.forEach((image) => {
+      images.push(image.url);
+    });
+
+    navigate('GraffitiProfile', {graffiti, images});
+  }
 
   return (
     <Background>
@@ -83,7 +104,11 @@ const Profile: React.FC = () => {
           data={graffitis}
           keyExtractor={(graf: Graffiti) => String(graf.id)}
           renderItem={({item}: {item: Graffiti}) => (
-            <GraffitiImage source={{uri: item.images[0].url}} />
+            <GraffitiContainer
+              activeOpacity={0.9}
+              onPress={() => handleNavigationProfile(item)}>
+              <GraffitiImage source={{uri: item.images[0].url}} />
+            </GraffitiContainer>
           )}
         />
       </Container>
